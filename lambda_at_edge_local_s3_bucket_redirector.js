@@ -1,5 +1,4 @@
-const ip = require('ip');
-
+const ipaddr = require('ipaddr.js')
 const ipRanges = require('./ip-ranges.json')
 
 const regionRedirectMapping = {
@@ -15,17 +14,16 @@ exports.handler = function(event, context, callback) {
   * specify HTTP 1.1, 2.0 or match-viewer.
   */
   var request = event.Records[0].cf.request;
-  var clientIp = request.clientIp
+  var clientIp = ipaddr.parse(request.clientIp)
   var aws_region = null
 
   /*
     TODO: check for aws source ip addr
   */
 
-  var ranges = ip.isV4Format(clientIp) ? ipRanges.prefixes : ipRanges.ipv6_prefixes
+  var ranges = clientIp.kind() == 'ipv4' ? ipRanges.prefixes : ipRanges.ipv6_prefixes
   for (var i = 0; i < ranges.length; i++) {
-    if (ip.cidrSubnet(ranges[i].ip_prefix || ranges[i].ipv6_prefix).contains(clientIp)) {
-console.log(clientIp + ' is in ' + (ranges[i].ip_prefix || ranges[i].ipv6_prefix))
+    if (clientIp.match(ipaddr.parseCIDR(ranges[i].ip_prefix || ranges[i].ipv6_prefix))) {
       var aws_region = ranges[i].region
       break
     }
