@@ -10,8 +10,9 @@
     "mocha": "^3.4.2"
   },
   "scripts": {
-    "test": "mocha *_spec.js"
+    "test": "mocha *_spec.js",
+    "start": "rm lambda_at_edge_local_s3_bucket_redirector.zip; zip -r lambda_at_edge_local_s3_bucket_redirector.zip ."
   },
   "author": "Marvin Frick <mfrick@mesosphere.com>",
-  "license": "ISC ?!?"
+  "license": "BSD"
 }

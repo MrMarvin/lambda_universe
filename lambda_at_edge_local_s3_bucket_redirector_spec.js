@@ -1,10 +1,11 @@
-
 const lambda = require('./lambda_at_edge_local_s3_bucket_redirector');
 const assert = require('assert');
 const url = require('url');
 
 // see http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/event-structure.html
-function mockLambdaEvent(clientIp = '1.2.3.4') {
+function mockLambdaEvent(clientIp) {
+  // default parameter value, node < 6 style:
+  var clientIp = typeof clientIp  !== 'undefined' ?  clientIp  : '1.2.3.4';
   return(
     {"Records":[
       {
