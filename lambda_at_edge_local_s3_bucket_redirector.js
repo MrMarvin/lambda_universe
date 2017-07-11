@@ -17,10 +17,6 @@ exports.handler = function(event, context, callback) {
   var clientIp = ipaddr.parse(request.clientIp)
   var aws_region = null
 
-  /*
-    TODO: check for aws source ip addr
-  */
-
   var ranges = clientIp.kind() == 'ipv4' ? ipRanges.prefixes : ipRanges.ipv6_prefixes
   for (var i = 0; i < ranges.length; i++) {
     if (clientIp.match(ipaddr.parseCIDR(ranges[i].ip_prefix || ranges[i].ipv6_prefix))) {
@@ -38,7 +34,10 @@ exports.handler = function(event, context, callback) {
       statusDescription: '302 Found',
       httpVersion: request.httpVersion,
       headers: {
-          Location: (regionRedirectMapping[aws_region] || regionRedirectMapping['default']) + request.uri,
+        location: [{
+          key: 'Location',
+          value: (regionRedirectMapping[aws_region] || regionRedirectMapping['default']) + request.uri
+        }]
       }
     }
     callback(null, response);

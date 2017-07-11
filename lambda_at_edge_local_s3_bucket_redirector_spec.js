@@ -19,8 +19,14 @@ function mockLambdaEvent(clientIp) {
             "httpVersion": "2.0",
             "clientIp": clientIp,
             "headers": {
-              "User-Agent": ["Test Agent"],
-              "Host" : ["d2fadu0nynjpfn.cloudfront.net"]
+              "user-agent": [{
+                "key": "Test Agent",
+                "value": "Test Agent"
+              }],
+              "host": [{
+                "key": "Host",
+                "value": "d2fadu0nynjpfn.cloudfront.net"
+              }]
             }
           }
         }
@@ -65,7 +71,7 @@ describe('the handler', function() {
      it('should be a properly formatted string', function() {
       var mockedEvent = mockLambdaEvent('13.32.0.42');
       lambda.handler(mockedEvent, {}, function(_, response) {
-        assert(url.parse(response.headers['Location']).pathname.includes(mockedEvent.Records[0].cf.request.uri))
+        assert(url.parse(response.headers.location[0].value).pathname.includes(mockedEvent.Records[0].cf.request.uri))
       } );
     });
   });
