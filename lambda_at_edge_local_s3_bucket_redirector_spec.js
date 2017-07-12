@@ -6,32 +6,36 @@ const url = require('url');
 function mockLambdaEvent(clientIp) {
   // default parameter value, node < 6 style:
   var clientIp = typeof clientIp  !== 'undefined' ?  clientIp  : '1.2.3.4';
-  return(
-    {"Records":[
-      {
-        "cf": {
-          "config": {
-            "distributionId": "EXAMPLE"
+  return({ Records:[
+    { cf:
+      { config:
+       { distributionId:
+        'ABCDEF123456' },
+         request: {
+          clientIp: clientIp,
+          headers: {
+            accept: [{
+             key: 'Accept',
+             value: '*/*'
+            }],
+            host: [{
+              key: 'Host',
+              value: 'd2fadu0nynjpfn.cloudfront.net'
+            }],
+            'user-agent': [{
+              key: 'User-Agent',
+              value: 'Test Agent'
+            }],
+            'x-forwarded-for': [{
+              key: 'X-Forwarded-For',
+              value: clientIp
+            }]
           },
-          "request": {
-            "uri": "/me.pic",
-            "method": "GET",
-            "httpVersion": "2.0",
-            "clientIp": clientIp,
-            "headers": {
-              "user-agent": [{
-                "key": "Test Agent",
-                "value": "Test Agent"
-              }],
-              "host": [{
-                "key": "Host",
-                "value": "d2fadu0nynjpfn.cloudfront.net"
-              }]
-            }
-          }
+          method: 'GET',
+          uri: '/some/path/file.gz'
         }
       }
-    ]
+    }]
   });
 }
 

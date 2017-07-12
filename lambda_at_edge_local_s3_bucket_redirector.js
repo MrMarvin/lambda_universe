@@ -7,14 +7,13 @@ const regionRedirectMapping = {
 }
 
 exports.handler = function(event, context, callback) {
-  /*
-  * Extract request object in order to preserve httpVersion field.
-  * This is necessary to match the client's httpVersion. Please
-  * refer to your CloudFront Distribution's httpVersion configuration for whether to
-  * specify HTTP 1.1, 2.0 or match-viewer.
-  */
+
+  // keep this for future debugging, as long as the L@E API is not stabilized:
+  //const util = require('util')
+  //console.log(`Lambda at Edge local S3 bucket redirector debug: event: ${util.inspect(event, {breakLength: Infinity, depth: 10})}`);
+
   var request = event.Records[0].cf.request;
-  var clientIp = ipaddr.parse(request.clientIp)
+  var clientIp = ipaddr.parse(request.headers['x-forwarded-for'][0].value)
   var aws_region = null
   var aws_ip_range = null
 
