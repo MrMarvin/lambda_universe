@@ -75,4 +75,12 @@ describe('the handler', function() {
       } );
     });
   });
+  describe('the x-debug header', function() {
+     it('should be a properly formatted string', function() {
+      var mockedEvent = mockLambdaEvent('13.32.0.42');
+      lambda.handler(mockedEvent, {}, function(_, response) {
+        assert(response.headers.debug[0].value.includes('13.32.0.42 is in'))
+      } );
+    });
+  });
 });

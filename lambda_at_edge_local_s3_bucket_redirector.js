@@ -16,17 +16,20 @@ exports.handler = function(event, context, callback) {
   var request = event.Records[0].cf.request;
   var clientIp = ipaddr.parse(request.clientIp)
   var aws_region = null
+  var aws_ip_range = null
 
   var ranges = clientIp.kind() == 'ipv4' ? ipRanges.prefixes : ipRanges.ipv6_prefixes
   for (var i = 0; i < ranges.length; i++) {
     if (clientIp.match(ipaddr.parseCIDR(ranges[i].ip_prefix || ranges[i].ipv6_prefix))) {
-      var aws_region = ranges[i].region
+      aws_region = ranges[i].region
+      aws_ip_range = ranges[i].ip_prefix || ranges[i].ipv6_prefix
       break
     }
   }
 
   if (!aws_region) {
     // Pass on and let CloudFront serve for non AWS clients
+    console.log(`Lambda at Edge local S3 bucket redirector debug: ${clientIp} not in any range, not redirecting.`);
     callback(null, request);
   } else {
     const response = {
@@ -37,9 +40,14 @@ exports.handler = function(event, context, callback) {
         location: [{
           key: 'Location',
           value: (regionRedirectMapping[aws_region] || regionRedirectMapping['default']) + request.uri
+        }],
+        debug: [{
+          key: 'Debug',
+          value: `${clientIp} is in ${aws_ip_range} -> ${aws_region}, redirecting.`
         }]
       }
     }
+    console.log(`Lambda at Edge local S3 bucket redirector debug: ${clientIp} is in ${aws_ip_range} -> ${aws_region} , redirecting.`);
     callback(null, response);
   }
 };
