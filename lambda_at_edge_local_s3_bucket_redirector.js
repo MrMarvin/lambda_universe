@@ -33,7 +33,7 @@ exports.handler = function(event, context, callback) {
   } else {
     const response = {
       status: '302',
-      statusDescription: '302 Found',
+      statusDescription: 'Found',
       httpVersion: request.httpVersion,
       headers: {
         location: [{
