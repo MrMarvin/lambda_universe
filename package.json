@@ -1,8 +1,7 @@
 {
-  "name": "lambda_at_edge_redir",
-  "version": "0.0.43",
-  "description": "A simple AWS Lambda function to 302 redirect clients that connect from AWS IP ranges, based on their region. This might be useful to relief CloudFront of traffic when the origin (i.e. a S3 bucket) is in the same region anyways.",
-  "main": "lambda_at_edge_local_s3_bucket_redirector.js",
+  "name": "lambda_universe",
+  "version": "0.1.42",
+  "description": "A set of simple AWS Lambda@Edge functions to configure a web based DC/OS universe.",
   "dependencies": {
     "ipaddr.js": "^1.4.0"
   },
@@ -11,7 +10,7 @@
   },
   "scripts": {
     "test": "mocha *_spec.js",
-    "start": "rm -rf node_modules; rm lambda_at_edge_local_s3_bucket_redirector.zip; npm install --production; zip -r lambda_at_edge_local_s3_bucket_redirector.zip ."
+    "start": "rm -rf node_modules; npm install --production; rm viewer_request_local_s3_bucket_redirector.zip; zip -r viewer_request_local_s3_bucket_redirector.zip node_modules/ ip-ranges.json viewer_request_local_s3_bucket_redirector.js; rm origin_request_universe_versioned_json.zip; zip -r origin_request_universe_versioned_json.zip node_modules/ origin_request_universe_versioned_json.js;"
   },
   "author": "Marvin Frick <mfrick@mesosphere.com>",
   "license": "BSD"

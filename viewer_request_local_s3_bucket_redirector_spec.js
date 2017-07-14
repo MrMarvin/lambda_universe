@@ -43,7 +43,7 @@ const AWS_EU_CENTRAL_IPV4 = "35.156.0.42"
 const AWS_US_EAST_IPV6 = "2600:1f18::42:23"
 const AWS_EU_CENTRAL_IPV6 = "2a01:578:0:7100::42"
 
-describe('the handler', function() {
+describe('the local s3 bucket redirector', function() {
   describe('for non AWS IPv4 sources', function() {
     it('should call back with the request', function() {
       var mockedEvent = mockLambdaEvent("192.160.66.42");

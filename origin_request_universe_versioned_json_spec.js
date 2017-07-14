@@ -40,7 +40,7 @@ function mockLambdaEvent(path, hUserAgent, hAccept) {
   });
 }
 
-describe('the server', function() {
+describe('the universe version multiplexer', function() {
   describe('for dcos/1.10 clients', function() {
     it('should directly get the json file', function() {
       var mockedEvent = mockLambdaEvent("/repo", "dcos/1.10");
