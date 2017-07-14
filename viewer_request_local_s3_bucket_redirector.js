@@ -1,9 +1,10 @@
+
 const ipaddr = require('ipaddr.js')
 const ipRanges = require('./ip-ranges.json')
 
 const regionRedirectMapping = {
   "us-east-1": "https://s3.amazonaws.com/downloads.mesosphere.io",
-  "default": "https://s3.amazonaws.com/downloads.mesosphere.io"
+  "us-east-2": "https://s3.amazonaws.com/downloads.mesosphere.io",
 }
 
 exports.handler = function(event, context, callback) {
@@ -26,11 +27,7 @@ exports.handler = function(event, context, callback) {
     }
   }
 
-  if (!aws_region) {
-    // Pass on and let CloudFront serve for non AWS clients
-    console.log(`Lambda at Edge local S3 bucket redirector debug: ${clientIp} not in any range, not redirecting.`);
-    callback(null, request);
-  } else {
+  if (aws_region && aws_region in regionRedirectMapping) {
     const response = {
       status: '302',
       statusDescription: 'Found',
@@ -38,7 +35,7 @@ exports.handler = function(event, context, callback) {
       headers: {
         location: [{
           key: 'Location',
-          value: (regionRedirectMapping[aws_region] || regionRedirectMapping['default']) + request.uri
+          value: regionRedirectMapping[aws_region] + request.uri
         }],
         debug: [{
           key: 'Debug',
@@ -46,7 +43,11 @@ exports.handler = function(event, context, callback) {
         }]
       }
     }
-    console.log(`Lambda at Edge local S3 bucket redirector debug: ${clientIp} is in ${aws_ip_range} -> ${aws_region} , redirecting.`);
+    console.log(`ViewerRequest local s3 bucket redirector debug: ${clientIp} is in ${aws_ip_range} -> ${aws_region} , redirecting.`);
     callback(null, response);
+  } else {
+    // Pass on and let CloudFront serve for non AWS clients
+    console.log(`ViewerRequest local s3 bucket redirector debug: ${clientIp} not in any range, not redirecting.`);
+    callback(null, request);
   }
 };

@@ -1,4 +1,4 @@
-const lambda = require('./lambda_at_edge_local_s3_bucket_redirector');
+const lambda = require('./viewer_request_local_s3_bucket_redirector');
 const assert = require('assert');
 const url = require('url');
 
@@ -38,6 +38,10 @@ function mockLambdaEvent(clientIp) {
     }]
   });
 }
+const AWS_US_EAST_IPV4 = "23.20.0.42"
+const AWS_EU_CENTRAL_IPV4 = "35.156.0.42"
+const AWS_US_EAST_IPV6 = "2600:1f18::42:23"
+const AWS_EU_CENTRAL_IPV6 = "2a01:578:0:7100::42"
 
 describe('the handler', function() {
   describe('for non AWS IPv4 sources', function() {
@@ -49,9 +53,15 @@ describe('the handler', function() {
     });
   });
   describe('for AWS IPv4 sources', function() {
-     it('should 302 redirect', function() {
-      lambda.handler(mockLambdaEvent("13.32.0.42"), {}, function(_, response) {
+     it('should 302 redirect if region has bucket', function() {
+      lambda.handler(mockLambdaEvent(AWS_US_EAST_IPV4), {}, function(_, response) {
         assert.equal(response.status, "302");
+      } );
+    });
+    it('should not redirect for others regions', function() {
+      var mockedEvent = mockLambdaEvent(AWS_EU_CENTRAL_IPV4);
+      lambda.handler(mockedEvent, {}, function(_, response) {
+        assert.equal(response, mockedEvent.Records[0].cf.request);
       } );
     });
   });
@@ -64,16 +74,22 @@ describe('the handler', function() {
     });
   });
   describe('for AWS IPv6 sources', function() {
-     it('should 302 redirect', function() {
-      lambda.handler(mockLambdaEvent("2a05:d07f:c000::23:42"), {}, function(_, response) {
+    it('should 302 redirect if region has bucket', function() {
+      lambda.handler(mockLambdaEvent(AWS_US_EAST_IPV6), {}, function(_, response) {
         assert.equal(response.status, "302");
+      } );
+    });
+    it('should not redirect for others regions', function() {
+      var mockedEvent = mockLambdaEvent(AWS_EU_CENTRAL_IPV6);
+      lambda.handler(mockedEvent, {}, function(_, response) {
+        assert.equal(response, mockedEvent.Records[0].cf.request);
       } );
     });
   });
 
   describe('the response location header', function() {
      it('should be a properly formatted string', function() {
-      var mockedEvent = mockLambdaEvent('13.32.0.42');
+      var mockedEvent = mockLambdaEvent(AWS_US_EAST_IPV4);
       lambda.handler(mockedEvent, {}, function(_, response) {
         assert(url.parse(response.headers.location[0].value).pathname.includes(mockedEvent.Records[0].cf.request.uri))
       } );
@@ -81,9 +97,9 @@ describe('the handler', function() {
   });
   describe('the x-debug header', function() {
      it('should be a properly formatted string', function() {
-      var mockedEvent = mockLambdaEvent('13.32.0.42');
+      var mockedEvent = mockLambdaEvent(AWS_US_EAST_IPV4);
       lambda.handler(mockedEvent, {}, function(_, response) {
-        assert(response.headers.debug[0].value.includes('13.32.0.42 is in'))
+        assert(response.headers.debug[0].value.includes(`${AWS_US_EAST_IPV4} is in`))
       } );
     });
   });
