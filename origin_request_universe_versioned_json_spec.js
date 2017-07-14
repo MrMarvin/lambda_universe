@@ -50,4 +50,13 @@ describe('the server', function() {
       } );
     });
   });
+  describe('for dcos clients < 1.7', function() {
+    it('should directly get the 1.6.1 zip file', function() {
+      var mockedEvent = mockLambdaEvent("/repo");
+      mockedEvent.Records[0].cf.request.headers = []
+      lambda.handler(mockedEvent, {}, function(_, request) {
+        assert(request.uri.match("repo-up-to-1.6.1.zip"));
+      } );
+    });
+  });
 });
