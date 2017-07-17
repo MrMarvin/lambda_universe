@@ -14,6 +14,7 @@ exports.handler = function(event, context, callback) {
 
   var request = event.Records[0].cf.request;
   const UNIVERSE_BASE_DIR = `/${(request.headers['host'] || [{value: 'universe.mesosphere.com'}])[0].value.split('.')[0]}`
+  //const UNIVERSE_BASE_DIR = '/universe'
   var hUserAgent = (request.headers['user-agent'] || [{value: ''}])[0].value
   var hAccept = (request.headers['accept'] || [{value: '*/*'}])[0].value
 

@@ -1,6 +1,6 @@
 {
   "name": "lambda_universe",
-  "version": "0.1.42",
+  "version": "0.1.43",
   "description": "A set of simple AWS Lambda@Edge functions to configure a web based DC/OS universe.",
   "dependencies": {
     "ipaddr.js": "^1.4.0"
