@@ -43,7 +43,7 @@ exports.handler = function(event, context, callback) {
         }]
       }
     }
-    console.log(`ViewerRequest local s3 bucket redirector debug: ${clientIp} is in ${aws_ip_range} -> ${aws_region} , redirecting.`);
+    console.log(`ViewerRequest local s3 bucket redirector debug: ${clientIp} is in ${aws_ip_range} (${aws_region}), redirecting to ${regionRedirectMapping[aws_region] + request.uri}`);
     callback(null, response);
   } else {
     // Pass on and let CloudFront serve for non AWS clients
