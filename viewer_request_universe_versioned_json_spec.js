@@ -1,4 +1,4 @@
-const lambda = require('./origin_request_universe_versioned_json');
+const lambda = require('./viewer_request_universe_versioned_json');
 const assert = require('assert');
 
 // see http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/event-structure.html
