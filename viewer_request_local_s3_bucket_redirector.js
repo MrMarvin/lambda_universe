@@ -15,7 +15,7 @@ exports.handler = function(event, context, callback) {
 
   var request = event.Records[0].cf.request;
   try {
-    var clientIp = ipaddr.parse(request.headers['x-forwarded-for'][0].value.split(',').pop())
+    var clientIp = ipaddr.parse(request.clientIp.split(',').pop())
     var aws_region = null
     var aws_ip_range = null
 
@@ -51,8 +51,12 @@ exports.handler = function(event, context, callback) {
     console.log(`ViewerRequest local s3 bucket redirector debug: ${clientIp} is in ${aws_ip_range} (${aws_region}), redirecting to ${regionRedirectMapping[aws_region] + request.uri}`);
     callback(null, response);
   } else {
+    if (aws_region) {
+      console.log(`ViewerRequest local s3 bucket redirector debug: ${clientIp} in ${aws_region} but no redirect target for this region, not redirecting.`);
+    } else {
+      console.log(`ViewerRequest local s3 bucket redirector debug: ${clientIp} not in any range, not redirecting.`);
+    }
     // Pass on and let CloudFront serve for non AWS clients
-    console.log(`ViewerRequest local s3 bucket redirector debug: ${clientIp} not in any range, not redirecting.`);
     callback(null, request);
   }
 };
