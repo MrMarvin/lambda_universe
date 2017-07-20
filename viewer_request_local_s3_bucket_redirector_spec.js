@@ -86,6 +86,27 @@ describe('the local s3 bucket redirector', function() {
       } );
     });
   });
+  describe('for unclear sources', function() {
+    it('should not fail and let CloudFront handle it', function() {
+      var mockedEvent = mockLambdaEvent(AWS_EU_CENTRAL_IPV4);
+      mockedEvent.Records[0].cf.request.headers['x-forwarded-for'] = null
+      lambda.handler(mockedEvent, {}, function(_, response) {
+        assert.equal(response, mockedEvent.Records[0].cf.request);
+      } );
+      mockedEvent.Records[0].cf.request.headers['x-forwarded-for'] = [{key: 'X-Forwarded-For', value: '42'}, {key: 'X-Forwarded-For', value: '1.2.3.4'}]
+      lambda.handler(mockedEvent, {}, function(_, response) {
+        assert.equal(response, mockedEvent.Records[0].cf.request);
+      } );
+      mockedEvent.Records[0].cf.request.headers['x-forwarded-for'] = [{key: 'X-Forwarded-For', value: `2a04:2f80::ab:23, 2a04:2f80::ab:1, ${AWS_EU_CENTRAL_IPV6}`}]
+      lambda.handler(mockedEvent, {}, function(_, response) {
+        assert.equal(response, mockedEvent.Records[0].cf.request);
+      } );
+      mockedEvent.Records[0].cf.request.headers = {}
+      lambda.handler(mockedEvent, {}, function(_, response) {
+        assert.equal(response, mockedEvent.Records[0].cf.request);
+      } );
+    });
+  });
 
   describe('the response location header', function() {
      it('should be a properly formatted string', function() {

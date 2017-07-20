@@ -1,4 +1,4 @@
-These AWS Lambda functions utilize AWS Lambda@Edge, which allows user defined functions to run in reaction to CloudFront requests and responses. See the offical AWS documentation to learn more. Currently the RC1 GA environment is targeted and future changes might be necessary.
+These AWS Lambda functions utilize AWS Lambda@Edge, which allows user defined functions to run in reaction to CloudFront requests and responses. See the offical AWS documentation to learn more. As the development was done against the RC1 pre-release, there might be minor changes needed for GA.
 
 # viewer_request_universe_versioned_json.js
 This function implements our server-side logic to redirect DC/OS clients to their specific version of the universe `repo.json`. Based on https://github.com/mesosphere/prod-universe/blob/master/nginx/etc/nginx/conf.d/universe.mesosphere.com.conf
@@ -34,3 +34,12 @@ npm install & npm test
 npm start
 ```
 or see what this shorthand script does in package.json.
+
+# Deploying
+CloudFormation didn't properly support(ed) this Lambda@Edge use case yet, but scripting aws api commands should be possible. The basic steps needed are:
+
+* build the .zip's, for each function (see above) do:
+* in the AWS webconsole, upload the zip for an existing or new AWS Lambda function in us-east-1, make sure the function is using NodeJS 6.10 runtime
+* 'Publish a new verion' of the function, take note of the ARN with the version suffixed (example 'arn:aws:lambda:us-east-1:12342234223:function:lambda_at_edge_local_s3_bucket_redirector:42')
+* on your CloudFront distribution, edit the 'Behavior' Lambda Function Association with the new ARN.
+
