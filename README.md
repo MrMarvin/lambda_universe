@@ -36,10 +36,9 @@ npm start
 or see what this shorthand script does in package.json.
 
 # Deploying
-CloudFormation didn't properly support(ed) this Lambda@Edge use case yet, but scripting aws api commands should be possible. The basic steps needed are:
+CloudFormation templates for the two Lambda@Edge functions as well as for needed IAM roles and CloudWatch LogGroups are in `cloudformation/`. Besides that, to deploy a new version of the functions, following steps are needed:
 
-* build the .zip's, for each function (see above) do:
-* in the AWS webconsole, upload the zip for an existing or new AWS Lambda function in us-east-1, make sure the function is using NodeJS 6.10 runtime
-* 'Publish a new verion' of the function, take note of the ARN with the version suffixed (example 'arn:aws:lambda:us-east-1:12342234223:function:lambda_at_edge_local_s3_bucket_redirector:42')
-* on your CloudFront distribution, edit the 'Behavior' Lambda Function Association with the new ARN.
-
+1. build the .zip's, for each function (see above) do:
+2. in the AWS webconsole, upload the zip for the existing AWS Lambda function in us-east-1
+3. 'Publish a new verion' of the function, take note of the ARN with the version suffixed (example 'arn:aws:lambda:us-east-1:12342234223:function:viewer_request_local_s3_bucket_redirector:42')
+4. on your CloudFront distribution, edit the 'Behavior' Lambda Function Association with the new ARN.
