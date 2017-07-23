@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: LambdaUniverse Stack for gobal Lambda@Edge functions
+Resources:
+  LambdaAtEdgeExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "edgelambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/service-role/lambda/"
+  LambdaRolePolicies:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "allow-cloudwatch-logs-in-all-regions"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Action: [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents"
+            ]
+            Resource: "arn:aws:logs:*:*:*"
+      Roles:
+        -
+          Ref: "LambdaAtEdgeExecutionRole"
+
+  lambdaViewerRequestLocalS3BucketRedirector:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: viewer_request_local_s3_bucket_redirector
+      Description: "A Lambda@Edge function to http 302 redirect requests to a region specific bucket, instead of serving the files via CloudFront"
+      Handler: "viewer_request_local_s3_bucket_redirector.handler"
+      Role:
+        Fn::GetAtt:
+          - "LambdaAtEdgeExecutionRole"
+          - "Arn"
+      Code:
+        ZipFile: |
+          console.log(\"Empty function, please upload a zip via the webinterface\")
+      Runtime: "nodejs6.10"
+      Timeout: "1"
+      MemorySize: "128"
+  lambdaViewerRequestUniverseVersionedJson:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: viewer_request_universe_versioned_json
+      Description: ""
+      Handler: "viewer_request_universe_versioned_json.handler"
+      Role:
+        Fn::GetAtt:
+          - "LambdaAtEdgeExecutionRole"
+          - "Arn"
+      Code:
+        ZipFile: |
+          console.log(\"Empty function, please upload a zip via the webinterface\")
+      Runtime: "nodejs6.10"
+      Timeout: "1"
+      MemorySize: "128"
+

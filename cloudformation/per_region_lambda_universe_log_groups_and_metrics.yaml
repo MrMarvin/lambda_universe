@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: LambdaUniverse Stack for gobal Lambda@Edge LogGroups and LogGroupMetrics on them.
+Resources:
+  lgViewerRequestLocalS3BucketRedirector:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "/aws/lambda/us-east-1.viewer_request_local_s3_bucket_redirector"
+      RetentionInDays: 60
+  lgViewerRequestUniverseVersionedJson:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "/aws/lambda/us-east-1.viewer_request_universe_versioned_json"
+      RetentionInDays: 60
+
+  lgmNoRedirectTarget:
+    Type: "AWS::Logs::MetricFilter"
+    Properties:
+      LogGroupName:
+        Ref: "lgViewerRequestLocalS3BucketRedirector"
+      FilterPattern: "\"no redirect target\""
+      MetricTransformations:
+        -
+          MetricValue: "1"
+          MetricNamespace: "viewer_request_local_s3_bucket_redirector"
+          MetricName: "no-redirect-target"
+  lgmNotRedirecting:
+    Type: "AWS::Logs::MetricFilter"
+    Properties:
+      LogGroupName:
+        Ref: "lgViewerRequestLocalS3BucketRedirector"
+      FilterPattern: "\"not redirecting\""
+      MetricTransformations:
+        -
+          MetricValue: "1"
+          MetricNamespace: "viewer_request_local_s3_bucket_redirector"
+          MetricName: "not-redirecting"
+  lgmRedirects:
+    Type: "AWS::Logs::MetricFilter"
+    Properties:
+      LogGroupName:
+        Ref: "lgViewerRequestLocalS3BucketRedirector"
+      FilterPattern: "\"redirecting tod\""
+      MetricTransformations:
+        -
+          MetricValue: "1"
+          MetricNamespace: "viewer_request_local_s3_bucket_redirector"
+          MetricName: "redirects"
