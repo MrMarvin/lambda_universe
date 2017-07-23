@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "mocha *_spec.js",
-    "start": "rm -rf node_modules; npm install --production; rm viewer_request_local_s3_bucket_redirector.zip; zip -r viewer_request_local_s3_bucket_redirector.zip node_modules/ ip-ranges.json viewer_request_local_s3_bucket_redirector.js; rm origin_request_universe_versioned_json.zip; zip -r origin_request_universe_versioned_json.zip node_modules/ origin_request_universe_versioned_json.js;"
+    "start": "rm -rf node_modules; npm install --production; rm viewer_request_local_s3_bucket_redirector.zip; zip -r viewer_request_local_s3_bucket_redirector.zip node_modules/ ip-ranges.json viewer_request_local_s3_bucket_redirector.js; rm viewer_request_universe_versioned_json.zip; zip -r viewer_request_universe_versioned_json.zip viewer_request_universe_versioned_json.js;"
   },
   "author": "Marvin Frick <mfrick@mesosphere.com>",
   "license": "BSD"

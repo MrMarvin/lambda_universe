@@ -39,7 +39,7 @@ Resources:
     Properties:
       LogGroupName:
         Ref: "lgViewerRequestLocalS3BucketRedirector"
-      FilterPattern: "\"redirecting tod\""
+      FilterPattern: "\"redirecting to\""
       MetricTransformations:
         -
           MetricValue: "1"
