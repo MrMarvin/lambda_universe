@@ -1,13 +1,14 @@
 exports.handler = function(event, context, callback) {
 
   // keep this for future debugging, as long as the L@E API is not stabilized:
-  //const util = require('util')
-  //console.log(`DEBUG event: ${util.inspect(event, {breakLength: Infinity, depth: 10})}`);
+  const util = require('util')
+  console.log(`DEBUG inevent: ${util.inspect(event, {breakLength: Infinity, depth: 10})}`);
 
   var rewrite = function(newUri) {
     if (newUri) {
       console.log(`OriginRequest universe versioned json debug: ${request.uri} -> ${newUri}`)
       request.uri = newUri
+      console.log(`DEBUG out event: ${util.inspect(event, {breakLength: Infinity, depth: 10})}`);
     }
     callback(null, request)
   }
@@ -17,6 +18,7 @@ exports.handler = function(event, context, callback) {
   //const UNIVERSE_BASE_DIR = '/universe'
   var hUserAgent = (request.headers['user-agent'] || [{value: ''}])[0].value
   var hAccept = (request.headers['accept'] || [{value: '*/*'}])[0].value
+  var hAcceptEncoding = (request.headers['accept-encoding'] || [{value: ''}])[0].value
 
   var dcosVersionRegexp = /.*dcos\/(\d+\.\d+).*/g
   // we assume a user is running DC/OS 1.6.1 if their User-Agent is provided
@@ -44,7 +46,11 @@ exports.handler = function(event, context, callback) {
 
   if (request.uri == '/repo') {
     if (serveJson) {
-      return(rewrite(`${UNIVERSE_BASE_DIR}/repo/repo-up-to-${dcosReleaseVersion}.json`))
+      if (hAcceptEncoding.match('gzip')) {
+        return(rewrite(`${UNIVERSE_BASE_DIR}/repo/repo-up-to-${dcosReleaseVersion}.json.gz`))
+      } else {
+        return(rewrite(`${UNIVERSE_BASE_DIR}/repo/repo-up-to-${dcosReleaseVersion}.json`))
+      }
     } else {
       return(rewrite(`${UNIVERSE_BASE_DIR}/repo/repo-up-to-${dcosReleaseVersion}.zip`))
     }
